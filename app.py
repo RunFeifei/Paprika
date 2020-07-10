@@ -78,6 +78,4 @@ api.add_resource(UserLogout, '/logout')
 api.add_resource(UserRegister, '/register')
 api.add_resource(TokenRefresh, '/token_refresh')
 
-if __name__ == "__main__":
-    db.init_app(app)
-    app.run(port=3000, debug=True)
+db.init_app(app)
