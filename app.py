@@ -92,13 +92,9 @@ def sessions():
 
 
 @socketio.on('ping')
-def test_message1(message):
-    app.logger.error('#########ping#########')
-
-
-@socketio.on('pong')
-def test_message2(message):
-    app.logger.error('#########ping#########')
+def test_message1():
+    socketio.emit('client', {'data': 'Connected', 'count': 0})
+    app.logger.error('#########test_message1#########')
 
 
 @socketio.on('connect')
@@ -108,7 +104,7 @@ def test_message3():
 
 ######################Run#######################################
 
-# db.init_app(app)
+db.init_app(app)
 # socketio.init_app(app)
 
 if __name__ == '__main__':
