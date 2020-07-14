@@ -1,8 +1,10 @@
 from datetime import timedelta
+from threading import Lock
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+from flask_socketio import SocketIO
 
 from config import db, BLACKLIST_TOKEN
 from resource.token import TokenRefresh
@@ -20,6 +22,8 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=6000)
 
 api = Api(app)
 jwt = JWTManager(app)
+socketio = SocketIO(app)
+#############################################################
 
 @app.before_first_request
 def create_tables():
@@ -73,9 +77,39 @@ def user_claims_callback(identity):
         return {'is_admin': True}
     return {'is_admin': False}
 
+
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserRegister, '/register')
 api.add_resource(TokenRefresh, '/token_refresh')
 
-db.init_app(app)
+
+######################SocketIO#######################################
+
+@app.route('/')
+def sessions():
+    return render_template('session.html')
+
+
+@socketio.on('ping')
+def test_message1(message):
+    app.logger.error('#########ping#########')
+
+
+@socketio.on('pong')
+def test_message2(message):
+    app.logger.error('#########ping#########')
+
+
+@socketio.on('connect')
+def test_message3():
+    app.logger.error('#########connect#########')
+
+
+######################Run#######################################
+
+# db.init_app(app)
+# socketio.init_app(app)
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True, port=5000, host='0.0.0.0')
