@@ -2,6 +2,7 @@ from datetime import timedelta
 from threading import Lock
 
 from flask import Flask, jsonify, render_template, copy_current_request_context, request
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, disconnect, rooms
@@ -19,6 +20,16 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=6000)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=6000)
+
+# CELERY
+app.config['BROKER_URL'] = 'redis://localhost:6379'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
+app.config['CELERY_ACCEPT_CONTENT'] = ['json', 'pickle']
+app.config['REDIS_URL'] = 'redis://localhost:6379'
+app.config['JSON_AS_ASCII'] = False
+
+
+CORS(app,cors_allowed_origins="*")
 
 api = Api(app)
 jwt = JWTManager(app)
