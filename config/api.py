@@ -17,11 +17,13 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=6000)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=6000)
 
+CORS(app, cors_allowed_origins="*")
+
+api.add_resource(TokenRefresh, '/token_refresh')
+api.add_resource(UserLogin, '/login')
+api.add_resource(UserLogout, '/logout')
+api.add_resource(UserRegister, '/register')
+
 
 def config_app_api():
-    CORS(app, cors_allowed_origins="*")
-
-    api.add_resource(TokenRefresh, '/token_refresh')
-    api.add_resource(UserLogin, '/login')
-    api.add_resource(UserLogout, '/logout')
-    api.add_resource(UserRegister, '/register')
+    return api
