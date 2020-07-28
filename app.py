@@ -1,6 +1,7 @@
 from datetime import timedelta
 from threading import Lock
 
+from celery import Celery
 from flask import Flask, jsonify, render_template, copy_current_request_context, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -8,8 +9,6 @@ from flask_restful import Api
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, disconnect, rooms
 
 from config import db, BLACKLIST_TOKEN
-from resource.token import TokenRefresh
-from resource.users import UserLogin, UserLogout, UserRegister
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = "jhjhjhl3bhb3jjbjjhjhjhjhjjhgsfeifeifiefieifeifeifieifeifei"
@@ -33,10 +32,33 @@ CORS(app,cors_allowed_origins="*")
 
 api = Api(app)
 jwt = JWTManager(app)
-socketio = SocketIO(app)
+# socketio = SocketIO(app)
 
 thread = None
 thread_lock = Lock()
+
+socketio = SocketIO(app, cors_allowed_origins='*', async_mode="threading",
+                    message_queue=app.config['CELERY_RESULT_BACKEND'])
+
+celery = Celery(app.name)
+celery.conf.update(app.config)
+
+celery.conf.CELERYBEAT_SCHEDULE = {
+    "test": {
+        "task": "get_cron",
+        "schedule": timedelta(seconds=10)
+    }
+}
+
+
+@celery.task(name="get_cron")
+def get_cron():
+    get_sendback.delay()
+
+
+@celery.task()
+def get_sendback():
+    socketio.emit('sendback', 'message', broadcast=True)
 
 
 #############################################################
@@ -94,10 +116,10 @@ def user_claims_callback(identity):
     return {'is_admin': False}
 
 
-api.add_resource(UserLogin, '/login')
-api.add_resource(UserLogout, '/logout')
-api.add_resource(UserRegister, '/register')
-api.add_resource(TokenRefresh, '/token_refresh')
+# api.add_resource(UserLogin, '/login')
+# api.add_resource(UserLogout, '/logout')
+# api.add_resource(UserRegister, '/register')
+# api.add_resource(TokenRefresh, '/token_refresh')
 
 
 ######################SocketIO#######################################
