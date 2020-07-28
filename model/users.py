@@ -1,4 +1,4 @@
-from config import db
+from config.common import db
 
 
 class UserModel(db.Model):

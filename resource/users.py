@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from flask_restful import reqparse, Resource
 from werkzeug.security import safe_str_cmp
 
-from config import BLACKLIST_TOKEN
+from config.common import BLACKLIST_TOKEN
 from model.users import UserModel
 
 _user_parser = reqparse.RequestParser()
