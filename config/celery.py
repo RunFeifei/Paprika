@@ -18,6 +18,17 @@ celery.conf.CELERYBEAT_SCHEDULE = {
         "schedule": timedelta(seconds=10)
     }
 }
+from config.socket import socketio
+
+
+@celery.task(name="get_cron")
+def get_cron():
+    get_sendback.delay()
+
+
+@celery.task()
+def get_sendback():
+    socketio.emit('sendback', 'message', broadcast=True)
 
 
 def config_app_celery():
