@@ -22,9 +22,9 @@ def make_celery():
     celeryLocal.conf.update(app.config)
 
     celeryLocal.conf.CELERYBEAT_SCHEDULE = {
-        "test": {
-            "task": "heart_beat",
-            "schedule": timedelta(seconds=3)
+        'test': {
+            'task': 'heart_beat',
+            'schedule': timedelta(seconds=3)
         }
     }
 
@@ -46,10 +46,13 @@ def config_app_celery():
 
 ######################CELERY#######################################
 
+def sendSuccess():
+    print('heart_beat_result--sendSuccess')
 
-@celery.task(name="heart_beat")
+
+@celery.task(name='heart_beat')
 def heart_beat():
-    async_emit_msg('HeartBeat', 'beat', broadcast=True).delay()
+    async_emit_msg.delay('heart_beat', 'beat', broadcast=True)
 
 
 @celery.task()
