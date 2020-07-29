@@ -46,10 +46,8 @@ def config_app_celery():
 
 ######################CELERY#######################################
 
-def sendSuccess():
-    print('heart_beat_result--sendSuccess')
 
-
+# callback=ack 不适用与celery?
 @celery.task(name='heart_beat')
 def heart_beat():
     async_emit_msg.delay('heart_beat', 'beat', broadcast=True)
