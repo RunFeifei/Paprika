@@ -6,4 +6,4 @@ celery -A config.celery.celery worker -l info -P eventlet
 B.启动socket:  
 python3 app.py  
 C.执行定时任务:  
-celery -A manage.celery beat --loglevel=debug
+celery -A config.celery.celery beat --loglevel=debug

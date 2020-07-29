@@ -3,11 +3,13 @@ from config.celery import config_app_celery
 from config.common import db, app
 from config.jwt import config_app_jwt
 from config.socket import config_app_socket, socketio
+from main.events import onEvents
 
 config_app_celery()
 config_app_api()
 config_app_jwt()
 config_app_socket()
+onEvents()
 
 db.init_app(app)
 # socketio.init_app(app)
