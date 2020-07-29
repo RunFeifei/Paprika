@@ -23,7 +23,7 @@ def make_celery():
 
     celeryLocal.conf.CELERYBEAT_SCHEDULE = {
         "test": {
-            "task": "get_cron",
+            "task": "heart_beat",
             "schedule": timedelta(seconds=3)
         }
     }
@@ -47,9 +47,9 @@ def config_app_celery():
 ######################CELERY#######################################
 
 
-@celery.task(name="get_cron")
-def get_cron():
-    async_emit_msg('HeartBeat', 'message', broadcast=True).delay()
+@celery.task(name="heart_beat")
+def heart_beat():
+    async_emit_msg('HeartBeat', 'beat', broadcast=True).delay()
 
 
 @celery.task()
