@@ -15,7 +15,7 @@ class UserRegister(Resource):
         params = _user_parser.parse_args()
         user = UserModel.find_by_username(params['username'])
         if user:
-            return {"msg": f"{user} already exists"}, 400
+            return {"msg": f"{user.username} already exists"}, 400
         user_model = UserModel(**params)
         try:
             user_model.save()
@@ -35,7 +35,7 @@ class UserLogin(Resource):
                        'access_token': access_token,
                        'refresh_token': refresh_token,
                    }, 200
-        return {"msg": f"{params['username']} login fails"}, 400
+        return {"msg": f"{params['username']} with password {params['password']} login fails"}, 400
 
 
 class UserLogout(Resource):

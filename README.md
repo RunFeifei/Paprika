@@ -8,4 +8,6 @@ celery -A config.celery.celery worker -l info -P eventlet
 3.启动socket:  
 python3 app.py  
 4.执行定时任务:  
-celery -A config.celery.celery beat --loglevel=debug
+celery -A config.celery.celery beat --loglevel=debug  
+#### 数据库
+采用sqlite数据库,db文件在./config/sqlite.db
