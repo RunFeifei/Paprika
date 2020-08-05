@@ -1,16 +1,19 @@
 from config.common import db
+from tools.tools import MD5
 
 
 class UserModel(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(30), nullable=False)
+    room_private = db.Column(db.String(50), nullable=False)
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.room_private = MD5(username)
 
     @classmethod
     def find_by_username(cls, username: str):
