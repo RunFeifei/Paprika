@@ -1,3 +1,6 @@
+import json
+
+from flask import jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_raw_jwt
 from flask_restful import reqparse, Resource
 from werkzeug.security import safe_str_cmp
@@ -31,10 +34,14 @@ class UserLogin(Resource):
         if user and safe_str_cmp(user.password, params['password']):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(identity=user.id)
-            return {
-                       'access_token': access_token,
-                       'refresh_token': refresh_token,
-                   }, 200
+            data = {
+                'access_token': access_token,
+                'refresh_token': refresh_token,
+                'user_id': user.id,
+                'username': user.username,
+                'room_private': user.room_private,
+            }
+            return data, 200
         return {"msg": f"{params['username']} with password {params['password']} login fails"}, 400
 
 

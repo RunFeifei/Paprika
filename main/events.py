@@ -4,6 +4,7 @@ from flask_socketio import emit, join_room, rooms, leave_room, close_room, disco
 from config.celery import async_emit_msg
 from config.common import app
 from config.socket import socketio
+from model.message import Message
 
 
 def onEvents():
@@ -17,19 +18,29 @@ def sessions():
     return render_template('session.html')
 
 
+@socketio.on('connect')
+def on_connect():
+    pass
+
+
+@socketio.on('join_room')
+def join_rooms(message):
+    uid_from = message['uid_from']
+    room_from = message['room_from']
+    join_room(room_from)
+    app.logger.error('{}--join_room--{}--joined_rooms_is---{}'.format(uid_from, room_from, rooms()))
+    text = message['text']
+    is_send_to_server = message['is_send_to_server']
+    time_client = message['time_client']
+    room_to = message['room_to']
+    message = Message(text, is_send_to_server, time_client, room_from, room_to, uid_from, uid_from)
+    message.save()
+
+
 @socketio.on('my_event')
 def test_message(message):
     app.logger.info('#########my_event    {}#########'.format(message))
     async_emit_msg('my_response', {'data': message['data'], 'count': 'receive_count'}).delay()
-
-
-@socketio.on('join')
-def join(message):
-    join_room(message['room'])
-    app.logger.info('##### {} entered {}'.format(request.sid, message['room']))
-    emit('my_response',
-         {'data': 'In rooms: ' + ', '.join(rooms()),
-          'count': 'receive_count'})
 
 
 @socketio.on('leave')
@@ -67,16 +78,6 @@ def disconnect_request():
     emit('my_response',
          {'data': 'Disconnected!', 'count': 'receive_count'},
          callback=can_disconnect)
-
-
-@socketio.on('connect')
-def test_connect():
-    emit('my_response', {'data': 'Connected', 'count': 0})
-
-
-@socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected', request.sid)
 
 
 @socketio.on('testroom')
