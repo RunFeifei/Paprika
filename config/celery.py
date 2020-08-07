@@ -48,10 +48,11 @@ def config_app_celery():
 
 
 # callback=ack 不适用与celery?
+# 拿到task id轮询状态如果失败就重试?
 @celery.task(name='heart_beat')
 def heart_beat():
     result = async_emit_msg.delay('heart_beat', 'beat', broadcast=True)
-    print('heart_beat_result----{}----{}----{}-----{}'.format(result.id, result.info, result.state, result.get()))
+    print('heart_beat_result----{}----{}'.format(result.id, result.state))
 
 
 # 怎么获取任务结果

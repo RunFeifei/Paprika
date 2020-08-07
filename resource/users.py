@@ -1,11 +1,10 @@
 import json
 
-from flask import jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_raw_jwt
 from flask_restful import reqparse, Resource
 from werkzeug.security import safe_str_cmp
 
-from config.common import BLACKLIST_TOKEN
+from config.common import BLACKLIST_TOKEN, app
 from model.users import UserModel
 
 _user_parser = reqparse.RequestParser()
@@ -24,7 +23,12 @@ class UserRegister(Resource):
             user_model.save()
         except:
             return {"msg": f"{params['username']} save fails"}, 400
-        return {"msg": f"{params['username']} save ok"}, 200
+        data = {
+            'user_id': user_model.id,
+            'username': user_model.username,
+            'room_private': user_model.room_private,
+        }
+        return data, 200
 
 
 class UserLogin(Resource):

@@ -6,7 +6,7 @@ from config.common import db
 class Message(db.Model):
     __tablename__ = 'messages'
 
-    id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
     type = db.Column(db.Integer, nullable=False)
     is_send_to_server = db.Column(db.Boolean, nullable=False)

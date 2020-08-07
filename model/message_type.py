@@ -3,7 +3,7 @@ from config.common import db
 
 class Message(db.Model):
     __tablename__ = 'messages_type'
-    id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     type = db.Column(db.Integer, nullable=False)
 
