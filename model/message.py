@@ -8,6 +8,7 @@ class Message(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
     is_send_to_server = db.Column(db.Boolean, nullable=False)
     time_client = db.Column(db.Integer, nullable=False)
     time_server = db.Column(db.Integer, nullable=False)
@@ -23,8 +24,9 @@ class Message(db.Model):
     uid_to = db.Column(db.String(100), nullable=True)
     uid_from = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, text, is_send_to_server, time_client, room_from, room_to, uid_from, uid_to):
+    def __init__(self, text, msg_type, is_send_to_server, time_client, room_from, room_to, uid_from, uid_to):
         self.text = text
+        self.type = msg_type
         self.is_send_to_server = is_send_to_server
         self.time_client = time_client
         self.time_server = int(round(time.time() * 1000))
@@ -32,6 +34,10 @@ class Message(db.Model):
         self.room_to = room_to
         self.uid_from = uid_from
         self.uid_to = uid_to
+
+    @classmethod
+    def find_by_username(cls, username: str):
+        return cls.query.filter_by(username=username).first()
 
     @classmethod
     def find_all(cls):

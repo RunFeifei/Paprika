@@ -1,8 +1,8 @@
-from flask import render_template, request, copy_current_request_context
+from flask import render_template, copy_current_request_context
 from flask_socketio import emit, join_room, rooms, leave_room, close_room, disconnect
 
 from config.celery import async_emit_msg
-from config.common import app
+from config.common import app, MESSAGE_TYPE
 from config.socket import socketio
 from model.message import Message
 
@@ -24,17 +24,30 @@ def on_connect():
 
 
 @socketio.on('join_room')
-def join_rooms(message):
+def on_join_rooms(message):
     uid_from = message['uid_from']
     room_from = message['room_from']
     join_room(room_from)
-    app.logger.error('{}--join_room--{}--joined_rooms_is---{}'.format(uid_from, room_from, rooms()))
+    joined_rooms = rooms()
+    app.logger.error('{}--join_room--{}--joined_rooms_is---{}'.format(uid_from, room_from, joined_rooms))
     text = message['text']
+    msg_type = message['type']
     is_send_to_server = message['is_send_to_server']
     time_client = message['time_client']
     room_to = message['room_to']
-    message = Message(text, is_send_to_server, time_client, room_from, room_to, uid_from, uid_from)
+    message = Message(text, msg_type, is_send_to_server, time_client, room_from, room_to, uid_from, uid_from)
     message.save()
+    message_id = message.id
+    app.logger.error('{}--{}--saved to db'.format(message_id, message.text))
+    if room_from in joined_rooms:
+        message['text'] = 'join_room_ok'
+        message['msg_type'] = MESSAGE_TYPE.MESSAGE_ACK.value
+        async_emit_msg('join_room', message, room=room_from).delay()
+
+
+@socketio.on('message')
+def on_message(message):
+    pass
 
 
 @socketio.on('my_event')
@@ -78,14 +91,3 @@ def disconnect_request():
     emit('my_response',
          {'data': 'Disconnected!', 'count': 'receive_count'},
          callback=can_disconnect)
-
-
-@socketio.on('testroom')
-def test_room():
-    app.logger.info('#########testroom#########')
-    # 只有room0收到了
-    emit('room', request.sid + ' has entered the room.', room='room0')
-    # 只有room0收到了
-    emit('room', 'emit to all rooms', )
-    # 未加入room也收到了
-    emit('room', 'broadcast to all rooms', broadcast=True)

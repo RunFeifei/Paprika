@@ -55,7 +55,21 @@ def heart_beat():
 
 
 # 怎么获取任务结果
+# 怎么知道该任务是够已经完成
 @celery.task()
 def async_emit_msg(event, *args, **kwargs):
     from config.socket import socketio
     socketio.emit(event, *args, **kwargs)
+
+
+"""
+@socketio.on('testroom')
+def test_room():
+    app.logger.info('#########testroom#########')
+    # 只有room0收到了
+    emit('room', request.sid + ' has entered the room.', room='room0')
+    # 只有room0收到了
+    emit('room', 'emit to all rooms', )
+    # 未加入room也收到了
+    emit('room', 'broadcast to all rooms', broadcast=True)
+"""
