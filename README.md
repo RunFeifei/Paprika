@@ -10,4 +10,6 @@ python3 app.py
 4.执行定时任务:  
 celery -A config.celery.celery beat --loglevel=debug  
 #### 数据库
-采用sqlite数据库,db文件在./config/sqlite.db
+采用sqlite数据库,db文件在./config/sqlite.db  
+#### Flower  
+https://docs.celeryproject.org/en/stable/userguide/monitoring.html#flower-real-time-celery-web-monitor
