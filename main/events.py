@@ -52,7 +52,17 @@ def on_join_rooms(message):
 
 @socketio.on('message')
 def on_message(message):
-    pass
+    uid_from = message['uid_from']
+    room_from = message['room_from']
+    text = message['text']
+    msg_type = message['type']
+    is_send_to_server = message['is_send_to_server']
+    time_client = message['time_client']
+    room_to = message['room_to']
+    message = Message(text, msg_type, is_send_to_server, time_client, room_from, room_to, uid_from, uid_from)
+    message.save()
+    message_id = message.id
+    app.logger.error('message_id-{}--{}--saved to db'.format(message_id, message.text))
 
 
 @socketio.on('my_event')
