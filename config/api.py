@@ -5,6 +5,7 @@ from flask_restful import Api, Resource
 
 from config.common import app
 from resource import UserLogin, UserLogout, UserRegister, TokenRefresh
+from resource.accounts import Accounts
 from resource.hello import HelloWorldResource
 
 api = Api(app)
@@ -25,6 +26,7 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserRegister, '/register')
 api.add_resource(HelloWorldResource, '/hello')
+api.add_resource(Accounts, '/find_paginate')
 
 
 def config_app_api():
