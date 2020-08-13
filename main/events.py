@@ -1,4 +1,4 @@
-from flask import render_template, copy_current_request_context
+from flask import render_template, copy_current_request_context, request
 from flask_socketio import emit, join_room, rooms, leave_room, disconnect
 
 from config.celery import async_emit_msg
@@ -22,7 +22,12 @@ def sessions():
 def on_connect():
     pass
 
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected', request.sid)
 
+
+# Flask有报错
 @socketio.on('on_disconnect')
 def on_disconnect_request(message):
     text = message['text']
@@ -34,18 +39,28 @@ def on_disconnect_request(message):
 
     @copy_current_request_context
     def do_disconnect():
-        app.logger.error('{}--do_disconnect'.format(uid_from))
+        app.logger.error('{}--do_disconnect--copy_current_request_context'.format(uid_from))
         disconnect()
 
     data = {
         'id': uid_from,
         'text': 'do_disconnect',
         'room_from': room_from,
+        'room_to': room_to,
         'uid_from': uid_from,
+        'uid_to': uid_to,
         'type': MESSAGE_TYPE.MESSAGE_BROADCAST.value,
     }
     app.logger.error('on_disconnect-{}'.format(message))
-    # async_emit_msg.apply_async(('disconnect', data, broadcast=True), callback=do_disconnect)
+    result = async_emit_msg.delay('do_disconnect', data, broadcast=True)
+
+    def on_message_result(body):
+        print(body)
+        status = body['status']
+        if status == 'SUCCESS':
+            do_disconnect()
+
+    result.get(on_message=on_message_result, propagate=False)
 
 
 @socketio.on('join_room')
