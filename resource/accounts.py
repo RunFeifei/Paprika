@@ -5,7 +5,7 @@ from model.users import UserModel
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('page', type=int, required=True)
-_user_parser.add_argument('per_page', type=int, required=False)
+_user_parser.add_argument('per_page', type=int, required=True)
 
 
 class Accounts(Resource):

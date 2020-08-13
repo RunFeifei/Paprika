@@ -47,15 +47,27 @@ def config_app_celery():
 ######################CELERY#######################################
 
 
+'''
+on_heart_beat
+{'status': 'SUCCESS', 'result': None, 'traceback': None, 'children': [], 'date_done': '2020-08-13T01:45:59.302765',
+'parent_id': 'f86789a9-bea6-47f2-8a9e-e4e92a9c1932', 'task_id': '8507ea16-7c25-49a3-988e-3a33265e7e02'}
+'''
+
+
 # callback=ack 不适用与celery?
 # 拿到task id轮询状态如果失败就重试?
 @celery.task(name='heart_beat')
 def heart_beat():
     result = async_emit_msg.delay('heart_beat', 'beat', broadcast=True)
-    print('heart_beat_result----{}----{}'.format(result.id, result.state))
+
+    def on_heart_beat(body):
+        print(body)
+
+    result.get(on_message=on_heart_beat, propagate=False)
 
 
 # 怎么获取任务结果
+# https://docs.celeryproject.org/en/latest/userguide/calling.html#on-message
 # 怎么知道该任务是够已经完成
 @celery.task()
 def async_emit_msg(event, *args, **kwargs):

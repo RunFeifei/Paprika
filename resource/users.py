@@ -24,7 +24,7 @@ class UserRegister(Resource):
         except:
             return {"msg": f"{params['username']} save fails"}, 400
         data = {
-            'user_id': user_model.id,
+            'id': user_model.id,
             'username': user_model.username,
             'room_private': user_model.room_private,
         }
@@ -41,7 +41,7 @@ class UserLogin(Resource):
             data = {
                 'access_token': access_token,
                 'refresh_token': refresh_token,
-                'user_id': user.id,
+                'id': user.id,
                 'username': user.username,
                 'room_private': user.room_private,
             }
