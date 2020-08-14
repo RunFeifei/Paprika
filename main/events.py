@@ -1,10 +1,14 @@
-from flask import render_template, copy_current_request_context, request
-from flask_socketio import emit, join_room, rooms, leave_room, disconnect
+import time
+
+from flask import render_template, request
+from flask_socketio import emit, join_room, rooms, leave_room
 
 from config.celery import async_emit_msg
 from config.common import app, MESSAGE_TYPE
+from config.redis import update_sid_uid_map, add_online_uids, get_uid_with_sid, remove_online_uids
 from config.socket import socketio
 from model.message import Message
+from model.users import UserModel
 
 
 def onEvents():
@@ -22,48 +26,20 @@ def sessions():
 def on_connect():
     pass
 
+
 @socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected', request.sid)
+def on_disconnect():
+    sid = request.sid
+    uid = get_uid_with_sid(sid)
+    remove_online_uids(uid)
+    user = UserModel.find_by_id(uid)
+    print('Client disconnected--{}--{}--{}'.format(sid, uid, user.to_json()))
+    message = Message('disconnect_broadcast', MESSAGE_TYPE.MESSAGE_BROADCAST.value, False,
+                      int(round(time.time() * 1000)), user.room_private, user.room_private, uid, uid)
+    async_emit_msg.delay('disconnect_broadcast', message.to_json(), broadcast=True)
 
 
-# Flask有报错
-@socketio.on('on_disconnect')
-def on_disconnect_request(message):
-    text = message['text']
-    type = message['type']
-    uid_from = message['uid_from']
-    uid_to = message['uid_to']
-    room_from = message['room_from']
-    room_to = message['room_to']
-
-    @copy_current_request_context
-    def do_disconnect():
-        app.logger.error('{}--do_disconnect--copy_current_request_context'.format(uid_from))
-        disconnect()
-
-    data = {
-        'id': uid_from,
-        'text': 'do_disconnect',
-        'room_from': room_from,
-        'room_to': room_to,
-        'uid_from': uid_from,
-        'uid_to': uid_to,
-        'type': MESSAGE_TYPE.MESSAGE_BROADCAST.value,
-    }
-    app.logger.error('on_disconnect-{}'.format(message))
-    result = async_emit_msg.delay('do_disconnect', data, broadcast=True)
-
-    def on_message_result(body):
-        print(body)
-        status = body['status']
-        if status == 'SUCCESS':
-            do_disconnect()
-
-    result.get(on_message=on_message_result, propagate=False)
-
-
-@socketio.on('join_room')
+@socketio.on('connect_broadcast')
 def on_join_rooms(message):
     uid_from = message['uid_from']
     room_from = message['room_from']
@@ -80,6 +56,8 @@ def on_join_rooms(message):
     message_id = message.id
     app.logger.error('message_id-{}--{}--saved to db'.format(message_id, message.text))
     if room_from in joined_rooms:
+        update_sid_uid_map(sid=request.sid, uid=uid_from)
+        add_online_uids(uid_from)
         data = {
             'id': message_id,
             'text': 'join_room_ok',

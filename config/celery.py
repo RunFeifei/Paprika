@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from celery import Celery
+from flask_socketio import emit
 
 from config.common import app
 
@@ -71,8 +72,7 @@ def heart_beat():
 # 怎么知道该任务是够已经完成
 @celery.task()
 def async_emit_msg(event, *args, **kwargs):
-    from config.socket import socketio
-    socketio.emit(event, *args, **kwargs)
+    emit(event, *args, **kwargs)
 
 
 """

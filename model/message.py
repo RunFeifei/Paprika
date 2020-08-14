@@ -50,3 +50,10 @@ class Message(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def to_json(self):
+        dict = {}
+        dict.update(self.__dict__)
+        if "_sa_instance_state" in dict:
+            del dict['_sa_instance_state']
+        return dict
