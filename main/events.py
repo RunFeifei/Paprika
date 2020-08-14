@@ -36,6 +36,7 @@ def on_disconnect():
     print('Client disconnected--{}--{}--{}'.format(sid, uid, user.to_json()))
     message = Message('disconnect_broadcast', MESSAGE_TYPE.MESSAGE_BROADCAST.value, False,
                       int(round(time.time() * 1000)), user.room_private, user.room_private, uid, uid)
+    message.save()
     async_emit_msg.delay('disconnect_broadcast', message.to_json(), broadcast=True)
 
 
@@ -80,7 +81,8 @@ def on_message(message):
     message = Message(text, msg_type, is_send_to_server, time_client, room_from, room_to, uid_from, uid_from)
     message.save()
     message_id = message.id
-    app.logger.error('message_id-{}--{}--saved to db'.format(message_id, message.text))
+    app.logger.error('message_id-{}--{}--saved to db  '.format(message_id, message.text))
+    async_emit_msg.delay('message', message.to_json(), room=room_from)
 
 
 @socketio.on('leave')

@@ -70,10 +70,15 @@ def heart_beat():
 # 怎么获取任务结果
 # https://docs.celeryproject.org/en/latest/userguide/calling.html#on-message
 # 怎么知道该任务是够已经完成
+# @celery.task()
+# def async_emit_msg(event, *args, **kwargs):
+#     emit(event, *args, **kwargs)
+
+
 @celery.task()
 def async_emit_msg(event, *args, **kwargs):
-    emit(event, *args, **kwargs)
-
+    from config.socket import socketio
+    socketio.emit(event, *args, **kwargs)
 
 """
 @socketio.on('testroom')

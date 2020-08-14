@@ -36,3 +36,9 @@ def remove_online_uids(uid):
 def get_online_uids():
     sets = cache.smembers('online_uids')
     return sets
+
+
+def clear_app_cache():
+    print('***********clear_app_cache**********************')
+    cache.delete('online_uids')
+    cache.delete('sid_uid_map')
