@@ -1,5 +1,5 @@
 # Paprika
-基于Flask-RESTful、Flask-JWT-Extended、Flask-SQLAlchemy在Flask框架下实现的微API服务  
+基于Flask-RESTful、Flask-JWT-Extended、Flask-SQLAlchemy、SQLite、Flask-socketIO、Celery、Redis在Flask框架下实现的最小化API和IM的Server例子  
 #### 接入socketIO中
 1 启动redis:  
 redis-server  
