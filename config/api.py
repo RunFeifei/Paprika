@@ -26,7 +26,7 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserRegister, '/register')
 api.add_resource(HelloWorldResource, '/hello')
-api.add_resource(Accounts, '/find_paginate')
+api.add_resource(Accounts, '/users_paginate')
 api.add_resource(OnLineUers, '/online_users')
 
 

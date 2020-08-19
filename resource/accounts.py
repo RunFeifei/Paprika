@@ -1,4 +1,5 @@
 from celery.utils.serialization import jsonify
+from flask_jwt_extended import jwt_refresh_token_required
 from flask_restful import reqparse, Resource
 
 from config.redis import get_online_uids
@@ -10,6 +11,7 @@ _user_parser.add_argument('per_page', type=int, required=True)
 
 
 class Accounts(Resource):
+    @jwt_refresh_token_required
     def get(self):
         params = _user_parser.parse_args()
         page = params['page']
@@ -23,11 +25,8 @@ class Accounts(Resource):
 
 
 class OnLineUers(Resource):
+    @jwt_refresh_token_required
     def get(self):
-        params = _user_parser.parse_args()
-        page = params['page']
-        per_page = params['per_page']
-        print('OnLineUers--get----{}----{}'.format(page, per_page))
         sets = get_online_uids()
         if sets is None:
             return {}, 200

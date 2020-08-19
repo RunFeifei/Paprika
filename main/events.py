@@ -82,7 +82,7 @@ def on_message(message):
     message.save()
     message_id = message.id
     app.logger.error('message_id-{}--{}--saved to db  '.format(message_id, message.text))
-    async_emit_msg.delay('message', message.to_json(), room=room_from)
+    async_emit_msg.delay('message', message.to_json(), room=room_to)
 
 
 @socketio.on('leave')
