@@ -1,5 +1,7 @@
 # Paprika
 基于Flask-RESTful、Flask-JWT-Extended、Flask-SQLAlchemy、SQLite、Flask-socketIO、Celery、Redis在Flask框架下实现的最小化API和IM的Server例子  
+#### Android Client APP
+[Android APP地址](https://github.com/RunFeifei/ASocketIOIM)  
 #### 接入socketIO中
 1 启动redis:  
 redis-server  
