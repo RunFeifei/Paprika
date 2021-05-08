@@ -4,7 +4,7 @@ billiard==3.6.3.0
 celery==4.4.6
 click==7.1.2
 dnspython==2.0.0
-eventlet==0.25.2
+eventlet==0.31.0
 Flask==1.1.2
 Flask-Cors==3.0.8
 Flask-JWT-Extended==3.24.1
