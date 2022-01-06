@@ -1,7 +1,7 @@
 amqp==2.6.0
 aniso8601==8.0.0
 billiard==3.6.3.0
-celery==4.4.6
+celery==5.2.2
 click==7.1.2
 dnspython==2.0.0
 eventlet==0.25.2
